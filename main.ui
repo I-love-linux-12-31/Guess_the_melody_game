@@ -204,7 +204,7 @@
         <item row="1" column="2">
          <widget class="QPushButton" name="btn_next">
           <property name="text">
-           <string>Next</string>
+           <string>End game</string>
           </property>
           <property name="icon">
            <iconset theme="QIcon::ThemeIcon::GoNext"/>
