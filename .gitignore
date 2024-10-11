@@ -1,0 +1,7 @@
+.idea
+.venv
+venv
+__pcache__
+resources/music/*
+resources/out.mp3
+
