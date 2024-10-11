@@ -9,13 +9,38 @@ from PyQt6.QtWidgets import (
     QWidget,
     QLabel,
     QRadioButton,
-    QPushButton
+    QPushButton,
 )
 from PyQt6.uic import loadUi
 
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtCore import QUrl
 
+
+class EndOfTheGameWindow(QWidget):
+    btn_exit: QPushButton
+
+    def __init__(self, game):
+        super().__init__()
+        loadUi("end_of_the_game.ui", self)
+        game: Game
+        images = ["resources/usr_1.png", "resources/usr_2.png", "resources/usr_3.png"]
+
+        data = list(sorted(zip(game.scores, images, game.player_names), key=lambda a: -a[0]))
+
+        self.images: [QLabel, QLabel, QLabel] = [self.img_1, self.img_2, self.img_3]
+        self.labels: [QLabel, QLabel, QLabel] = [self.label_1, self.label_2, self.label_3]
+
+        emoji = ["🥇", "🥈", "🥉"]
+
+        for i, (score, path, name) in enumerate(data):
+            self.images[i].setPixmap(QPixmap(path))
+            self.labels[i].setText(F"{name} - {emoji[i]}\nScore: {score}")
+
+        self.btn_exit.clicked.connect(sys.exit)
+
+        self.show()
 
 
 class MainWindow(QWidget):
@@ -32,7 +57,7 @@ class MainWindow(QWidget):
     player_2_block: QWidget
     player_3_block: QWidget
 
-    player_1_label:QLabel
+    player_1_label: QLabel
     player_2_label: QLabel
     player_3_label: QLabel
 
@@ -53,12 +78,14 @@ class MainWindow(QWidget):
         self.answers = [self.answer_1, self.answer_2, self.answer_3, self.answer_4]
         self.current_player = 0
 
-
         self.btn_play.clicked.connect(self.play_audio)
         self.btn_submit.clicked.connect(self.submit)
+        self.btn_next.clicked.connect(self.end_game)
 
         self.next()
         self.update_user_selection_indicator()
+
+        self.end_of_game = None
 
     def play_audio(self, file_path=None):
         if not isinstance(file_path, str):
@@ -70,6 +97,10 @@ class MainWindow(QWidget):
     def stop_audio(self):
         self._player.stop()
 
+    def end_game(self):
+        self.end_of_game = EndOfTheGameWindow(self.game)
+        self.hide()
+
     def next(self):
         self.game.next_task()
         answers = self.game.get_answers()
@@ -78,12 +109,12 @@ class MainWindow(QWidget):
             answer.setEnabled(True)
             answer.setStyleSheet("")
             self.btn_play.setEnabled(True)
-            self.btn_next.setEnabled(False)
+            # self.btn_next.setEnabled(False)
 
     def submit(self):
         answer = [a for a in self.answers if a.isChecked()]
 
-        print(f"Player {self.current_player}: submited {answer}")
+        print(f"Player {self.current_player}: submitted {answer}")
 
         self.stop_audio()
         if answer:
@@ -100,7 +131,7 @@ class MainWindow(QWidget):
             else:
                 print(F"Incorrect answer: {answer[0].text()}! Correct is: {self.game.get_solution()}")
                 answer[0].setEnabled(False)
-                answer[0].setStyleSheet("color: red;") #  background-color: red;
+                answer[0].setStyleSheet("color: red;")
 
             self.current_player = (self.current_player + 1) % 3
             self.update_user_selection_indicator()
