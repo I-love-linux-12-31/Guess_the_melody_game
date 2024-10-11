@@ -1,5 +1,6 @@
 from behave import given, when, then
 from main import Game
+import main
 import os.path
 
 @given('счёт игры [{score1:d}, {score2:d}, {score3:d}]')
@@ -70,3 +71,40 @@ def step_impl(context):
 @then('результатом должен быть список {expected}')
 def step_impl(context, expected):
     assert context.result == eval(expected)
+
+@given('идущая игра, ход игрока 1')
+def step_impl(context):
+    context.app =  main.QApplication([])
+    context.window = main.MainWindow()
+
+@when('игрок даёт правильный ответ и нажимает на кнопку ответить')
+def step_impl(context):
+    _index = context.window.game.current_variants.index(context.window.game.get_solution())
+    context.window.answers[_index].setChecked(True)
+    context.window.submit()
+
+@then('Счёт игры изменяется')
+def step_impl(context):
+    assert context.window.game.scores == [1, 0, 0]
+
+@when('игрок даёт неправильный ответ и нажимает на кнопку ответить')
+def step_impl(context):
+    _index = context.window.game.current_variants.index(context.window.game.get_solution())
+    context.window.answers[(_index + 1) % 3].setChecked(True)
+    context.window.submit()
+
+@then('Счёт игры не изменяется и ход переходит к игроку 2')
+def step_impl(context):
+    assert context.window.game.scores == [0, 0, 0]
+    assert context.window.current_player == 1
+
+@when('игрок даёт правильный ответ и нажимает на кнопку ответить, а затем завершает игру')
+def step_impl(context):
+    _index = context.window.game.current_variants.index(context.window.game.get_solution())
+    context.window.answers[(_index + 1) % 3].setChecked(True)
+    context.window.submit()
+    context.window.end_game()
+
+@then('Счёт игры изменяется, игрок 1 занимает 1 место')
+def step_impl(context):
+    assert str(context.window.end_of_game.labels[0].text()).startswith("User1")
