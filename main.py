@@ -132,6 +132,7 @@ class MainWindow(QWidget):
                 print(F"Incorrect answer: {answer[0].text()}! Correct is: {self.game.get_solution()}")
                 answer[0].setEnabled(False)
                 answer[0].setStyleSheet("color: red;")
+                self.btn_play.setEnabled(True)
 
             self.current_player = (self.current_player + 1) % 3
             self.update_user_selection_indicator()
