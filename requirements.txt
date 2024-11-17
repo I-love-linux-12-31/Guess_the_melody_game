@@ -2,4 +2,3 @@ PyQt6
 PyQt6-sip
 pydub
 behave
-audioop-lts
