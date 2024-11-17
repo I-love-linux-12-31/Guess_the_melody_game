@@ -1,6 +1,10 @@
 # Игра "Угадай мелодию"
 ТиВПО Практическая работа 3. Вариант № 86 - 75 = **11**
 
+## Видео демонстрация
+[Смотреть видео](https://disk.yandex.com/i/zAXrgHbguIWZLw) или 
+[**Скачать файл**](https://github.com/I-love-linux-12-31/Guess_the_melody_game/raw/refs/heads/main/demo_video_2024-11-17%2014-45-11.mkv)
+
 ## Используемые библиотеки:
 * unittest
 * behave
